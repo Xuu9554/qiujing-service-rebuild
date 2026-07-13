@@ -1,0 +1,61 @@
+server:
+  port: 11087
+  servlet:
+    context-path: /qiujing-service-rebuild
+
+spring:
+  profiles:
+    active: dev
+  application:
+    name: qiujing-service-rebuild
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 500MB
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://127.0.0.1:3306/qiujing?characterEncoding=utf8&useUnicode=true&useSSL=false&useTimezone=true&serverTimezone=GMT%2B8&allowMultiQueries=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    druid:
+      initial-size: 5
+      max-active: 10
+      min-idle: 1
+      max-wait: 60000
+      pool-prepared-statements: false
+      validation-query: SELECT 1 FROM DUAL
+      validation-query-timeout: 10000
+      test-on-borrow: true
+      test-on-return: false
+      test-while-idle: true
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 30000
+      filters: stat
+
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*Mapper.xml
+  typeAliasesPackage: com.qiujing.entity
+  global-config:
+    db-config:
+      id-type: AUTO
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+    banner: off
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params:
+
+logging:
+  config: classpath:log-back.xml
+  level:
+    com.qiujing: DEBUG
