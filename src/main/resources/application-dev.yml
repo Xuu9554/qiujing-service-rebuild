@@ -6,3 +6,7 @@ spring:
     host: 192.168.0.171
     port: 6379
     password: sunland@2020
+
+qiujing:
+  common:
+    redis-project: XDIPP

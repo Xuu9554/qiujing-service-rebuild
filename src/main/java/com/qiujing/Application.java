@@ -2,6 +2,7 @@ package com.qiujing;
 
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.system.SystemUtil;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -10,10 +11,14 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.io.File;
 
+import static com.qiujing.common.Constant.ROOT_PATH;
+import static com.qiujing.common.Constant.SPRING_APPLICATION_NAME;
+
 @EnableAsync
 @EnableTransactionManagement
 @EnableScheduling
 @SpringBootApplication
+@MapperScan("com.qiujing.mapper*")
 public class Application {
 
     public static void main(String[] args) {
@@ -30,7 +35,7 @@ public class Application {
 
         String exportPath = SystemUtil.getOsInfo().isLinux() ? "." + File.separator + "logs"
                 // 本地的日志文件夹和你当前的项目同级
-                : new File(System.getProperty("user.dir")).getParent() + File.separator + "logs" + File.separator + "qiujing-service-rebuild";
+                : new File(ROOT_PATH).getParent() + File.separator + "logs" + File.separator + SPRING_APPLICATION_NAME;
 
         String loggingCommand = "--logging.dir=" + exportPath;
 
