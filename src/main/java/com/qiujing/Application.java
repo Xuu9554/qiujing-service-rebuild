@@ -2,6 +2,8 @@ package com.qiujing;
 
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.system.SystemUtil;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,6 +21,7 @@ import static com.qiujing.common.Constant.SPRING_APPLICATION_NAME;
 @EnableScheduling
 @SpringBootApplication
 @MapperScan("com.qiujing.mapper*")
+@OpenAPIDefinition(info = @Info(title = "求精水暖器材厂后端项目API", description = "求精水暖器材厂后端项目SwaggerAPI管理", version = "1.0.0"))
 public class Application {
 
     public static void main(String[] args) {

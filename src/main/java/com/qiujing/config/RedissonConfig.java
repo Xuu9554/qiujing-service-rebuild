@@ -4,9 +4,12 @@ import cn.hutool.core.util.StrUtil;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
+import org.redisson.config.ConstantDelay;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.time.Duration;
 
 @Configuration
 public class RedissonConfig {
@@ -22,10 +25,12 @@ public class RedissonConfig {
 
     @Bean(destroyMethod = "shutdown")
     public RedissonClient redissonClient() {
+
         Config config = new Config();
+        config.setPassword(password);
+
         config.useSingleServer()
                 .setAddress(StrUtil.format("redis://{}:{}", host, port))
-                .setPassword(password)
                 .setDatabase(0)
                 // max-active
                 .setConnectionPoolSize(10)
@@ -38,9 +43,8 @@ public class RedissonConfig {
                 // 设置命令重试次数
                 .setRetryAttempts(3)
                 // 设置命令重试发送时间间隔
-                .setRetryInterval(1500);
+                .setRetryDelay(new ConstantDelay(Duration.ofMillis(1500)));
         return Redisson.create(config);
     }
 
 }
-

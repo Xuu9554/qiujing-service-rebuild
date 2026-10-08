@@ -24,13 +24,13 @@ public enum ExceptionAmityHintEnum {
     LOGIN_EXPIRED_EXCEPTION_HINT(LoginInvalidException.class, Throwable::getMessage, LOGIN_EXPIRED, false),
 
     /**
-     * 使用{@link javax.validation.constraints}包下的注解时，自定义的message信息将优先于业务异常抛出
+     * 使用{@link jakarta.validation.constraints}包下的注解时，自定义的message信息将优先于业务异常抛出
      * <p>
-     * <b>注意：</b> 如果想要使 {@link javax.validation.constraints} 包下的注解的校验生效，
-     * 必须在 controller 的入参前面加上 {@link javax.validation.Valid}。
+     * <b>注意：</b> 如果想要使 {@link jakarta.validation.constraints} 包下的注解的校验生效，
+     * 必须在 controller 的入参前面加上 {@link jakarta.validation.Valid}。
      * </p>
      */
-    BIND_EXCEPTION(BindException.class, t -> ((BindException) t).getAllErrors().get(0).getDefaultMessage(), false),
+    BIND_EXCEPTION(BindException.class, t -> ((BindException) t).getAllErrors().getFirst().getDefaultMessage(), false),
 
     /**
      * 项目自定义异常抛出

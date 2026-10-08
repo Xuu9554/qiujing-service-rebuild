@@ -3,8 +3,6 @@ package com.qiujing.holder;
 import cn.hutool.core.lang.Opt;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
-import com.qiujing.exception.ServiceAssert;
-import com.qiujing.exception.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.*;
 import org.redisson.client.codec.Codec;
@@ -14,8 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.util.Map;
-
-import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Slf4j
 @Component
@@ -103,37 +99,13 @@ public class RedissonHolder {
     }
 
     /**
-     * 加锁
+     * 获取Redisson分布式锁实例，具体加锁与释放策略由调用方决定
      *
-     * @param lockName     分布式锁Key
-     * @param waitSeconds  等待时长
-     * @param leaseSeconds 锁占用时长
-     * @param task         执行任务
+     * @param lockName 分布式锁名称
+     * @return {@link RLock} Redisson分布式锁
      */
-    public void withLock(String lockName, long waitSeconds, long leaseSeconds, Runnable task) {
-        RLock lock = redissonClient.getLock(StrUtil.format("{}:TEMPORARY:{}", redisProject, lockName));
-        try {
-            boolean locked = lock.tryLock(waitSeconds, leaseSeconds, SECONDS);
-            ServiceAssert.isTrue(locked, "当前交易锁定中, 请勿重复操作");
-            task.run();
-        } catch (InterruptedException e) {
-            // 处理线程中断异常
-            Thread.currentThread().interrupt();
-            log.error("执行加锁任务时被中断: {}", e.getMessage());
-            throw new ServiceException("执行任务时被中断");
-        } catch (ServiceException customException) {
-            // 项目自定义异常
-            throw customException;
-        } catch (Exception e) {
-            // 处理其他异常
-            log.error("加锁执行任务时发生错误: {}", e.getMessage());
-            throw new ServiceException("执行任务时发生错误");
-        } finally {
-            // 确保在finally中释放锁时当前线程持有锁
-            if (lock.isLocked() && lock.isHeldByCurrentThread()) {
-                lock.unlock();
-            }
-        }
+    public RLock getLock(String lockName) {
+        return redissonClient.getLock(StrUtil.format("{}:{}", redisProject, lockName));
     }
 
 }

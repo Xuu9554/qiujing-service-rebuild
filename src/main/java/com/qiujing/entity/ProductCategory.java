@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @TableName("product_category")
 public class ProductCategory implements Serializable {
 
+    @Serial
     private final static long serialVersionUID = 1061522244930821097L;
 
     /**

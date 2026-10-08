@@ -3,12 +3,14 @@ package com.qiujing.vo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 @Data
 @AllArgsConstructor(staticName = "of")
 public class LoginCaptcha implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 148082058786432436L;
 
     /**

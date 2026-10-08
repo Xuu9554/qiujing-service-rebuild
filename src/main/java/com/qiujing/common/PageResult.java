@@ -2,12 +2,14 @@ package com.qiujing.common;
 
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
 @Data
 public class PageResult<T> implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -8860964191650309173L;
 
     /**

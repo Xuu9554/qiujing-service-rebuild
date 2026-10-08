@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import static com.qiujing.common.Constant.FAIL;
@@ -15,6 +16,7 @@ import static com.qiujing.common.Constant.SUCCESS;
 @AllArgsConstructor(staticName = "of")
 public class ResponseEntity<T> implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -5100053890711879957L;
 
     /**

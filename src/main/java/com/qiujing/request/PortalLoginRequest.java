@@ -2,11 +2,13 @@ package com.qiujing.request;
 
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 @Data
 public class PortalLoginRequest implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 4917821216628040870L;
 
     /**

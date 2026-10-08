@@ -1,6 +1,5 @@
 package com.qiujing.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.qiujing.interceptor.BaseInterceptor;
 import com.qiujing.util.JsonHelper;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
@@ -23,11 +23,10 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        baseInterceptors.stream().filter(BaseInterceptor::isEnabled).forEach(interceptor -> { //
-            registry.addInterceptor(interceptor)
-                    .addPathPatterns(interceptor.getPathPatterns())
-                    .excludePathPatterns(interceptor.getInterceptorExcludePathPatterns());
-        });
+        baseInterceptors.stream().filter(BaseInterceptor::isEnabled).forEach(interceptor -> registry
+                .addInterceptor(interceptor)
+                .addPathPatterns(interceptor.getPathPatterns())
+                .excludePathPatterns(interceptor.getInterceptorExcludePathPatterns()));
     }
 
     @Override

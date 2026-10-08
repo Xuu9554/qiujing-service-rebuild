@@ -1,6 +1,6 @@
 package com.qiujing.service.impl;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import com.qiujing.entity.ProductCategory;
 import com.qiujing.mapper.ProductCategoryMapper;
 import com.qiujing.service.ProductCategoryService;

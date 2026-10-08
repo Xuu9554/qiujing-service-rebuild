@@ -28,10 +28,10 @@ public abstract class BaseInterceptor implements HandlerInterceptor {
         // 放行swagger
         DEFAULT_INTERCEPTOR_EXCLUDE_PATH_PATTERNS.add("/");
         DEFAULT_INTERCEPTOR_EXCLUDE_PATH_PATTERNS.add("/csrf");
-        DEFAULT_INTERCEPTOR_EXCLUDE_PATH_PATTERNS.add("/swagger-resources/**");
         DEFAULT_INTERCEPTOR_EXCLUDE_PATH_PATTERNS.add("/webjars/**");
-        DEFAULT_INTERCEPTOR_EXCLUDE_PATH_PATTERNS.add("/v2/**");
-        DEFAULT_INTERCEPTOR_EXCLUDE_PATH_PATTERNS.add("/swagger-ui.html/**");
+        DEFAULT_INTERCEPTOR_EXCLUDE_PATH_PATTERNS.add("/v3/api-docs/**");
+        DEFAULT_INTERCEPTOR_EXCLUDE_PATH_PATTERNS.add("/swagger-ui/**");
+        DEFAULT_INTERCEPTOR_EXCLUDE_PATH_PATTERNS.add("/swagger-ui.html");
     }
 
     /**

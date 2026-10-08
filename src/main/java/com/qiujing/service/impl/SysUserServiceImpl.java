@@ -1,7 +1,7 @@
 package com.qiujing.service.impl;
 
 import cn.hutool.core.util.StrUtil;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import com.qiujing.entity.SysUser;
 import com.qiujing.exception.ServiceAssert;
 import com.qiujing.exception.ServiceException;

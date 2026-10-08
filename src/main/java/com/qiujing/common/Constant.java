@@ -1,6 +1,6 @@
 package com.qiujing.common;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import tools.jackson.core.type.TypeReference;
 
 import java.util.LinkedHashMap;
 
@@ -55,7 +55,7 @@ public class Constant {
     /**
      * Map反序列化类型（统一复用，避免重复创建）
      */
-    public final static TypeReference<LinkedHashMap<String, Object>> LINKED_HASH_MAP_TYPE = new TypeReference<LinkedHashMap<String, Object>>() {
+    public final static TypeReference<LinkedHashMap<String, Object>> LINKED_HASH_MAP_TYPE = new TypeReference<>() {
 
     };
 

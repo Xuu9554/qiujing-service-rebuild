@@ -4,26 +4,23 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.json.JsonReadFeature;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Nullable;
+import tools.jackson.core.json.JsonReadFeature;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.*;
+import tools.jackson.databind.ext.javatime.deser.LocalDateDeserializer;
+import tools.jackson.databind.ext.javatime.deser.LocalDateTimeDeserializer;
+import tools.jackson.databind.ext.javatime.deser.LocalTimeDeserializer;
+import tools.jackson.databind.ext.javatime.ser.LocalDateSerializer;
+import tools.jackson.databind.ext.javatime.ser.LocalDateTimeSerializer;
+import tools.jackson.databind.ext.javatime.ser.LocalTimeSerializer;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
+import tools.jackson.databind.type.TypeFactory;
 
 import java.io.InputStream;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,7 +42,7 @@ public class JsonHelper {
      * @return {@link ObjectMapper} ObjectMapper实例
      */
     public static ObjectMapper newStandardObjectMapper() {
-        return MAPPER.copy();
+        return MAPPER.rebuild().build();
     }
 
     /**
@@ -148,21 +145,6 @@ public class JsonHelper {
     }
 
     /**
-     * 反序列化字节流为Map
-     *
-     * @param url 字节流
-     * @return {@link Map}<{@link String}, {@link Object}> LinkedHashMap
-     */
-    public static Map<String, Object> parseMap(URL url) {
-        try {
-            return MapUtil.emptyIfNull(MAPPER.readValue(url, LINKED_HASH_MAP_TYPE));
-        } catch (Exception e) {
-            log.error(StrUtil.format("尝试反序列化目标链接的内容时发生错误，原因: {}", e.getMessage()), e);
-            return Collections.emptyMap();
-        }
-    }
-
-    /**
      * 反序列化输入流为Map
      *
      * @param serializedData 输入流
@@ -232,11 +214,11 @@ public class JsonHelper {
 
     // ------------------------------------------------------------------------------------------------------------------------
 
-    private final static Set<JsonReadFeature> STANDARD_JSON_FEATURES = CollUtil.newHashSet(
+    private final static Set<JsonReadFeature> STANDARD_JSON_FEATURES = Set.of(
             // 允许在JSON中使用注释
             JsonReadFeature.ALLOW_JAVA_COMMENTS,
             // 允许JSON存在没用双引号括起来的field
-            JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES,
+            JsonReadFeature.ALLOW_UNQUOTED_PROPERTY_NAMES,
             // 允许JSON存在使用单引号括起来的field
             JsonReadFeature.ALLOW_SINGLE_QUOTES,
             // 允许JSON存在没用引号括起来的ascii控制字符
@@ -251,8 +233,6 @@ public class JsonHelper {
             JsonReadFeature.ALLOW_TRAILING_COMMA
     );
 
-    private final static Set<JsonReadFeature> JSON_READ_FEATURES_ENABLED = Collections.unmodifiableSet(STANDARD_JSON_FEATURES);
-
     private final static ObjectMapper MAPPER;
 
     private final static TypeFactory DEFAULT_TYPE_FACTORY;
@@ -263,35 +243,29 @@ public class JsonHelper {
 
     static {
 
-        MAPPER = JsonMapper.builder().enable(JSON_READ_FEATURES_ENABLED.toArray(new JsonReadFeature[0])).build();
-
-        // 配置序列化级别
-        MAPPER.setSerializationInclusion(ALWAYS);
-
-        // 对象为空时不抛异常
-        MAPPER.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-
-        // 允许单个数据当做数组处理
-        MAPPER.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
-        // 有属性不能映射的时候不报错
-        MAPPER.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        // 允许未知字段
-        MAPPER.enable(JsonGenerator.Feature.IGNORE_UNKNOWN);
-
-        // 设置时区
-        MAPPER.setTimeZone(TimeZone.getTimeZone("GMT+8"));
-        MAPPER.setDateFormat(new SimpleDateFormat(NORM_DATETIME_PATTERN));
-        // 识别Java8时间
-        MAPPER.registerModule(new ParameterNamesModule());
-        MAPPER.registerModule(new Jdk8Module());
-        JavaTimeModule javaTimeModule = new JavaTimeModule();
+        SimpleModule javaTimeModule = new SimpleModule();
         javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(NORM_DATETIME_FORMATTER));
         javaTimeModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(NORM_DATETIME_FORMATTER));
         javaTimeModule.addSerializer(LocalDate.class, new LocalDateSerializer(NORM_DATE_FORMATTER));
         javaTimeModule.addDeserializer(LocalDate.class, new LocalDateDeserializer(NORM_DATE_FORMATTER));
         javaTimeModule.addSerializer(LocalTime.class, new LocalTimeSerializer(NORM_TIME_FORMATTER));
         javaTimeModule.addDeserializer(LocalTime.class, new LocalTimeDeserializer(NORM_TIME_FORMATTER));
-        MAPPER.registerModule(javaTimeModule);
+
+        MAPPER = JsonMapper.builder()
+                .enable(STANDARD_JSON_FEATURES.toArray(new JsonReadFeature[0]))
+                // 对象为空时不抛异常
+                .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+                // 允许单个数据当做数组处理
+                .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+                // 有属性不能映射的时候不报错
+                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                // 设置时区
+                .defaultTimeZone(TimeZone.getTimeZone("GMT+8"))
+                .defaultDateFormat(new SimpleDateFormat(NORM_DATETIME_PATTERN))
+                // 配置序列化级别
+                .changeDefaultPropertyInclusion(inclusion -> JsonInclude.Value.construct(ALWAYS, ALWAYS))
+                // Java时间类型格式化
+                .addModule(javaTimeModule).build();
 
         DEFAULT_TYPE_FACTORY = MAPPER.getTypeFactory();
 
